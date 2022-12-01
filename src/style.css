@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Nerko+One&display=swap');
+
+:root {
+    --main-font: 'Nerko One';
+    --sky-400: #38bdf8;
+    --orange-300: #fdba74;
+    --sky-50: #f0f9ff;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    font-family: var(--main-font);
+}
+
+header{
+    height: 10vh;
+    background-color: var(--sky-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.hamburger-menu{
+    position: absolute;
+    left: 0.5rem;
+    cursor: pointer;
+}
+
+.main-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+h1{
+    margin: 0;
+    display: inline;
+    color: var(--sky-50);
+    align-content: center;
+    font-size: 3rem;
+}
+
+.orange-300 {
+    color: var(--orange-300);
+}
+

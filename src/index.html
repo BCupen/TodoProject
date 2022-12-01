@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo Things</title>
-<script defer src="runtime.bundle.js"></script><script defer src="main.bundle.js"></script></head>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
 <body>
     <header class="sky-400">
-        <img src=57855a00b36c363bb93f.svg class="hamburger-menu">
+        <img src=<%=require("./assets/dots-vertical.svg")%> class="hamburger-menu">
         <span class="main-heading">
-            <img src=fcac6f76685c47f02d03.svg alt="title-icon" class="title-icon">
+            <img src=<%=require("./assets/clipboard2-check-fill.svg")%> alt="title-icon" class="title-icon">
             <h1 class="title main">
                 To
                 <span class="orange-300">Do</span>
