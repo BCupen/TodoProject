@@ -3,6 +3,7 @@
 :root {
     --main-font: 'Nerko One';
     --sky-400: #38bdf8;
+    --sky-300: #7dd3fc;
     --orange-300: #fdba74;
     --sky-50: #f0f9ff;
 }
@@ -47,5 +48,24 @@ h1{
 
 .orange-300 {
     color: var(--orange-300);
+}
+
+.sidebar {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /*Stay in place*/
+    z-index: 1; /* Stay on top */
+    /* top: 0; */
+    left: 0;
+    background-color: var(--sky-300); /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 5rem; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+    white-space: nowrap;
+}
+
+.main {
+    transition: margin-left .5s; /* If you want a transition effect */
+    padding: 2rem;
 }
 
