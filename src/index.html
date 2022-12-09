@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="icon" type="image/x-icon" href=<%=require("./assets/clipboard2-check-fill.svg")%>>
 </head>
 <body>
     <header class="sky-400">
@@ -12,22 +13,40 @@
         <span class="main-heading">
             <img src=<%=require("./assets/clipboard2-check-fill.svg")%> alt="title-icon" class="title-icon">
             <h1 class="title">
-                To
-                <span class="orange-300">Do</span>
+                To<span class="orange-300">Do</span>
                  Things
             </h1>
         </span>
     </header>
     <div class="sidebar">
         <div class="filters">
-            This is where you filter tasks
+            <div class="all-tasks task-tab">
+                <img src=<%=require("./assets/calendar3.svg")%> class="all-tasks-icon">
+                <h3 class="tasks-heading">All</h3>
+            </div>
+            <div class="todays-tasks task-tab">
+                <img src=<%=require("./assets/calendar3-event.svg")%> class="all-tasks-icon">
+                <h3 class="tasks-heading">Today</h3>
+            </div>
+            <div class="upcoming-task task-tab">
+                <img src=<%=require("./assets/calendar3-week.svg")%> class="all-tasks-icon">
+                <h3 class="tasks-heading">Upcoming</h3>
+            </div>
         </div>
-        <div class="projects">
-            This is your projects
+        <div class="projects-div">
+            <span  class="project-heading">
+                <h2 class="project-title">Your Projects</h2>
+                <img class="add-project" src=<%=require("./assets/plus-lg.svg")%>>
+            </span>
         </div>
     </div>
     <div class="main">
         This is where the tasks go
+    </div>
+    <div class="modal">
+        <div class="modal-content">
+            This is my modal
+        </div>
     </div>
 </body>
 </html>
