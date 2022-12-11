@@ -7,6 +7,7 @@
     --orange-300: #fdba74;
     --orange-200: #fed7aa;
     --sky-50: #f0f9ff;
+    --orange-50: #fff7ed;
 }
 
 body {
@@ -90,11 +91,118 @@ h1{
   
   /* Modal Content/Box */
 .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    background-color: var(--orange-50);
+    margin: 10% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
+    border-radius: 3%;
     width: 30vw; /* Could be more or less, depending on screen size */
+    color: var(--sky-400);
+}
+
+.modal-heading {
+    color:  var(--orange-300);
+    font-size: 2.3rem;
+    margin: 0.5rem 0;
+    text-align: center;
+}
+
+.create-project {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+label, .color-heading{
+    font-size: 1.5rem;
+}
+
+#project-name {
+    border: 1px solid var(--sky-300);
+    border-radius: 10%;
+    background-color: var(--sky-50);
+    height: 1.5rem;
+    color: var(--sky-400);
+    font-family: 'Nerko One';
+    font-size: 1.2rem;
+}
+
+::placeholder {
+    color: var(--sky-300)
+}
+
+.project-color-picker {
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+input[name="color"] {
+    display: none;
+}
+
+.button {
+    display: inline-block;
+    cursor: pointer;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 100%;
+}
+
+.button:hover{
+    transform: scale(1.1);
+    border: 0.2rem solid var(--sky-300);
+}
+
+input:checked ~ .button {
+    border: 0.2rem solid var(--sky-300);
+}
+
+.black .button {
+    background-color: #000000;
+}
+
+.red .button {
+    background-color: #dc2626;
+}
+
+.yellow .button {
+    background-color: #fbbf24;
+}
+
+.green .button {
+    background-color: #84cc16;
+}
+
+.blue .button {
+    background-color: #0e7490;
+}
+
+.pink .button {
+    background-color: #f43f5e;
+}
+
+.button-div {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.cancel-button:hover {
+    cursor: pointer;
+    fill: #dc2626;
+}
+
+.confirm-button:hover {
+    cursor: pointer;
+    fill: #16a34a;
 }
 
 .filters, .projects {
@@ -131,7 +239,8 @@ h1{
 }
 
 .add-project:hover{
-    transform: scale(1.2);
+    transform: scale(1.2) rotate(90deg);
+    transition-duration: 0.5s;
     cursor: pointer;
 }
 
