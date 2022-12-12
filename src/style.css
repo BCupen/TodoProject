@@ -4,8 +4,10 @@
     --main-font: 'Nerko One';
     --sky-400: #38bdf8;
     --sky-300: #7dd3fc;
+    --sky-200: #bae6fd;
     --orange-300: #fdba74;
     --orange-200: #fed7aa;
+    --orange-100: #ffedd5;
     --sky-50: #f0f9ff;
     --orange-50: #fff7ed;
 }
@@ -71,9 +73,57 @@ h1{
     box-shadow: 3px 0 2px -2px gray;
 }
 
+.projects {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.project {
+    background-color: var(--sky-200);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-left: 0.5rem;
+    min-height: 4vh;
+}
+
+.project .project-color {
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 100%;
+}
+
+h3.name {
+    color: var(--orange-100);
+    font-size: 1.5rem;
+    margin: 0.2rem 0;
+    width: 8rem;
+    white-space: initial;
+}
+
+.edit-delete-span {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    right: 1rem; 
+    gap: 0.5rem;
+}
+
+.edit, .delete{
+    fill: #f87171;
+    cursor: pointer;
+}
+
+.edit:hover, .delete:hover {
+    transform: scale(1.1) rotate(360deg);
+    transition-duration: 0.7s;
+}
+
 .main {
     transition: margin-left .5s; /* If you want a transition effect */
-    padding: 2rem;
+    padding: 0 2rem;
 }
 
 .modal {
@@ -136,11 +186,26 @@ label, .color-heading{
     color: var(--sky-300)
 }
 
+.error-msg {
+    display: none;
+    font-size: 0.7rem;
+    color: #f87171;
+    font-family: 'Courier New';
+    text-align:justify;
+    margin-top: 0.2rem;
+}
+
+
 .project-color-picker {
     height: 10vh;
     display: flex;
     align-items: center;
     gap: 0.4rem;
+}
+
+#project-name:focus-visible {
+    outline: none;
+    border: 1px solid var(--sky-400);
 }
 
 input[name="color"] {
@@ -230,6 +295,7 @@ input:checked ~ .button {
     align-items: center;
     gap: 0.5rem;
     padding-left: 1rem;
+    height: 7vh;
 }
 
 .project-title {
@@ -244,4 +310,37 @@ input:checked ~ .button {
     cursor: pointer;
 }
 
+.tasks.none {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 3.5rem;
+    text-align: center;
+    color: #d6d3d1;
+}
+
+.main-heading {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.filter-heading {
+    margin: 0;
+    font-size: 5rem;
+    color: var(--sky-400);
+    font-weight: 100;
+}
+
+.add-task {
+    fill: var(--orange-300);
+    cursor: pointer;
+}
+
+.add-task:hover {
+    transform: scale(1.2) rotate(180deg);
+    fill: var(--sky-300);
+    transition-duration: 0.5s;
+}
 
