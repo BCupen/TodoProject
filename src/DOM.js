@@ -1,26 +1,32 @@
+import {format} from 'date-fns';
 import projects from './projects.js';
+import tasks from './tasks.js';
+import High from './assets/high.svg';
+import Medium from './assets/medium.svg';
+import Low from './assets/low.svg';
 
 const DOM = (() =>{
     const colorCodes = projects.projectColors;
+    let currFilter = 'All';
 
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const sidebar = document.querySelector('.sidebar');
     const main = document.querySelector('.main');
     const tasksDiv = document.querySelector('.tasks');
+    const filterHeading = document.querySelector('.filter-heading');
     const addProjectButton = document.querySelector('.add-project');
     const projectsDiv = document.querySelector('.projects');
     const modal = document.querySelector('.modal');
     const modalBox = document.querySelector('.modal-content');
     const modalConfirmButton = document.querySelector('.confirm-button');
     const modalCancelButton = document.querySelector('.cancel-button');
+    const addTaskButton = document.querySelector('.add-task');
+    const form = document.querySelector('form');
+    const filterTabs= document.querySelectorAll('.task-tab');
 
-    function _createNewProject(modal){
-        const heading = document.createElement('h2');
-        heading.classList.add('modal-heading');
+    function _createNewProject(form){
+        const heading = document.querySelector('.modal-heading');
         heading.textContent = `Create New Project`;
-
-        const createProjectForm = document.createElement('form');
-        createProjectForm.classList.add('create-project');
 
         const nameLabel = _createLabelInput('project-name', 'text', 'Project Name:  ', 'Project...');
         const errorMsg = document.createElement('span');
@@ -50,10 +56,141 @@ const DOM = (() =>{
 
         div.append(colorHeading, colorDiv);
 
-        createProjectForm.append(nameLabel, div);
+        form.append(nameLabel, div);        
+    }
 
-        modal.prepend(heading, createProjectForm);
+    function _createNewTask(form){
+        const heading = document.querySelector('.modal-heading');
+        heading.textContent =  `Create New Task`;
+
+        const titleLabel = document.createElement('label');
+        titleLabel.textContent = `Title: `;
+        titleLabel.htmlFor = 'task-title';
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.id = 'task-title';
+        titleInput.name = 'task-title';
+        titleInput.maxLength = 25;
+        titleInput.classList.add('form-input');
+        const errorMsg = document.createElement('span');
+        errorMsg.classList.add('error-msg');
+        errorMsg.textContent = `This is a required field`
+        titleLabel.append(titleInput, errorMsg);
+
+        const descLabel  = document.createElement('label');
+        descLabel.textContent = `Description: `;
+        descLabel.htmlFor = `task-description`;
+        const descTextArea = document.createElement('textarea');
+        descTextArea.name = `task-description`;
+        descTextArea.id = `task-description`;
+        descTextArea.maxLength = 100;
+        descTextArea.classList.add('form-input');
+        descLabel.append(descTextArea);
+
+        const dateLabel = document.createElement('label');
+        dateLabel.textContent = `Due Date: `;
+        dateLabel.htmlFor = `task-due-date`;
+        const dueDateInput = document.createElement('input');
+        dueDateInput.type = 'date';
+        dueDateInput.id = `task-due-date`;
+        dueDateInput.name = `task-due-date`;
+        dueDateInput.min = format(new Date(), 'yyyy-MM-dd');
+        dueDateInput.classList.add('form-input');
+        dateLabel.append(dueDateInput);
+
+        const priorityDiv = document.createElement('div');
+        priorityDiv.classList.add('priority-div');
+        const priorityHeading = document.createElement('span');
+        priorityHeading.textContent = `Task Priority: `;
+        priorityHeading.classList.add('priority-heading');
+
+        const highPriorityLabel = document.createElement('label');
+        highPriorityLabel.htmlFor = `high-priority`;
+        highPriorityLabel.classList.add('high-priority');
+        const highPriorityRadio = document.createElement('input');
+        highPriorityRadio.type = `radio`;
+        highPriorityRadio.name = `priority`;
+        highPriorityRadio.id = `high-priority`;
+        highPriorityRadio.value = `high`;
+        const highSpan = document.createElement('span');
+        highSpan.classList.add('priority-button');
+        const highIcon = new Image();
+        highIcon.src = High;
+        highSpan.append(highIcon);
+        highPriorityLabel.append(highPriorityRadio, highSpan);
+
+        const mediumPriorityLabel = document.createElement('label');
+        mediumPriorityLabel.htmlFor = `medium-priority`;
+        mediumPriorityLabel.classList.add('medium-priority');
+        const mediumPriorityRadio = document.createElement('input');
+        mediumPriorityRadio.type = `radio`;
+        mediumPriorityRadio.name = `priority`;
+        mediumPriorityRadio.id = `medium-priority`;
+        mediumPriorityRadio.value = `medium`;
+        const mediumSpan = document.createElement('span');
+        mediumSpan.classList.add('priority-button');
+        const mediumIcon = new Image();
+        mediumIcon.src = Medium;
+        mediumSpan.append(mediumIcon);
+        mediumPriorityLabel.append(mediumPriorityRadio, mediumSpan);
+
+        const lowPriorityLabel = document.createElement('label');
+        lowPriorityLabel.htmlFor = `low-priority`;
+        lowPriorityLabel.classList.add('low-priority');
+        const lowPriorityRadio = document.createElement('input');
+        lowPriorityRadio.type = `radio`;
+        lowPriorityRadio.name = `priority`;
+        lowPriorityRadio.id = `low-priority`;
+        lowPriorityRadio.value = `low`;
+        lowPriorityRadio.checked = true;
+        const lowSpan = document.createElement('span');
+        lowSpan.classList.add('priority-button');
+        const lowIcon = new Image();
+        lowIcon.src = Low;
+        lowSpan.append(lowIcon);
+        lowPriorityLabel.append(lowPriorityRadio, lowSpan);
+
+        const priorities = document.createElement('div');
+        priorities.classList.add('priorities');
+        priorities.append(highPriorityLabel, mediumPriorityLabel, lowPriorityLabel);
         
+        priorityDiv.append(priorityHeading, priorities);
+
+        const projectLabel = document.createElement('label');
+        projectLabel.htmlFor= 'select-project';
+        projectLabel.textContent = `Project: `;
+        const projectSelect = document.createElement('select');
+        projectSelect.name = `select-project`;
+        projectSelect.id = `select-project`;
+        projectSelect.classList.add('form-input');
+        const noneOption = document.createElement('option');
+        noneOption.value = `(none)`;
+        noneOption.textContent = `(none)`;
+        noneOption.selected = true;
+        projectSelect.append(noneOption);
+
+        const currProjects = projects.getProjects();
+        for(let project of currProjects){
+            const option = document.createElement('option');
+            option.value = project.name;
+            option.textContent = project.name;
+            projectSelect.append(option);
+        }
+
+        projectLabel.append(projectSelect);
+
+        form.append(titleLabel, descLabel, dateLabel, priorityDiv, projectLabel);
+    }
+
+    function _createTaskDiv(task){
+        const div = document.createElement('div');
+        div.classList.add('task');
+        const title = document.createElement('h3');
+        title.classList.add('title');
+        title.textContent = task.title;
+
+        div.append(title);
+        return div;
     }
 
     function _createLabelRadio(value, checked=false){
@@ -95,13 +232,39 @@ const DOM = (() =>{
         return label;
     }
 
-    function _clearModal(modal){
-        while (!modal.firstElementChild.classList.contains('button-div')) {
-            modal.removeChild(modal.firstElementChild);
-        }
+    function _clearModalForm(form){
+        const header = document.querySelector('.modal-heading');
+        header.innerHTML = 'Heading';
+        form.innerHTML = '';
     }
 
-    function showTasks(filter, taskList=[]){
+    function showTasks(filter, project=''){
+        filterHeading.textContent = filter;
+        const taskList = tasks.getTasks(filter, project);
+        if(taskList.length > 0){
+            tasksDiv.innerHTML = '';
+            if(tasksDiv.classList.contains('none')){
+                tasksDiv.classList.remove('none');
+            }
+            for(let task of taskList){
+               tasksDiv.append( _createTaskDiv(task));
+            }
+
+        }else{
+            if(!tasksDiv.classList.contains('none')){
+                tasksDiv.classList.add('none');
+                tasksDiv.innerHTML = `<span class="no-tasks-msg">You have no tasks. Why not create one now?</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" class="bi bi-plus-square add-task" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>`;
+                const addTask = document.querySelector('.add-task');
+                addTask.addEventListener('click', (e)=>{
+                    modal.style.display = 'block';
+                    _createNewTask(form);
+                })
+            }            
+        }
     }
 
     function showProjects(projectList=[]){
@@ -151,32 +314,66 @@ const DOM = (() =>{
 
         addProjectButton.addEventListener('click', (e)=>{
             modal.style.display = 'block';
-            _createNewProject(modalBox);
+            _createNewProject(form);
         });
 
         modalConfirmButton.addEventListener('click', (e)=>{
-            const name = document.querySelector('#project-name');
-            const color = document.querySelector(`input[type='radio']:checked`);
-            if(name.value){
-                const list = projects.addProject(name.value, color.value);
-                document.querySelector('.create-project').reset();
-                modal.style.display = 'none';
-                showProjects(list);    
-                _clearModal(modalBox); 
-            }else{
-                const errorMsg = document.querySelector('.error-msg');
-                errorMsg.style.display = 'block';
-                const input = document.querySelector('#project-name');
-                input.style.border = '1px solid #f87171';
-            }    
+            //need to check modal header
+            const modalHeading = document.querySelector('.modal-heading');
+            if(modalHeading.textContent == 'Create New Project'){
+                const name = document.querySelector('#project-name');
+                const color = document.querySelector(`input[type='radio']:checked`);
+                if(name.value){
+                    const list = projects.addProject(name.value, color.value);
+                    document.querySelector('.create-project').reset();
+                    modal.style.display = 'none';
+                    showProjects(list);    
+                    _clearModalForm(form); 
+                }else{
+                    const errorMsg = document.querySelector('.error-msg');
+                    errorMsg.style.display = 'block';
+                    const input = document.querySelector('#project-name');
+                    input.style.border = '1px solid #f87171';
+                } 
+            }else if(modalHeading.textContent == `Create New Task`){
+                const taskTitle = document.querySelector('#task-title');
+                if(taskTitle.value){
+                    const taskDesc = document.querySelector('#task-description');
+                    const taskDue = document.querySelector('#task-due-date');
+                    const taskPriority = document.querySelector(`input[type='radio']:checked`);
+                    const taskProject = document.querySelector(`#select-project`);
+                    tasks.addTask(taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, taskProject.value);
+                    document.querySelector('.create-project').reset();
+                    modal.style.display = 'none';
+                    showTasks(currFilter);    
+                    _clearModalForm(form);
+                }else{
+                    const errorMsg = document.querySelector('.error-msg');
+                    errorMsg.style.display = 'block';
+                    const input = document.querySelector('#project-name');
+                    input.style.border = '1px solid #f87171';
+                }
+            }
+                
         })
 
-        window.onclick = function(event) {
-            if (event.target == modal) {
-              modal.style.display = "none";
-              _clearModal(modalBox);
-            }
-        }
+        modalCancelButton.addEventListener('click', (e)=>{
+            modal.style.display = "none";
+            _clearModalForm(form);
+        })
+
+        addTaskButton.addEventListener('click', (e)=>{
+            modal.style.display = 'block';
+            _createNewTask(form);
+        })
+
+        filterTabs.forEach(filter => filter.addEventListener('click', (e)=>{
+            filterTabs.forEach(filter => filter.classList.remove('selected'));
+            filter.classList.add('selected');
+            const tabHeading = filter.getElementsByTagName('h3')[0];
+            currFilter = tabHeading.textContent;
+            showTasks(currFilter);
+        }))
     }
 
     return {loadHandlers};

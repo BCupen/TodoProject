@@ -168,11 +168,24 @@ h3.name {
     gap: 1rem;
 }
 
-label, .color-heading{
+label, .color-heading, .priority-heading{
     font-size: 1.5rem;
 }
 
-#project-name {
+label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.priorities {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 1rem;
+}
+
+.form-input {
     border: 1px solid var(--sky-300);
     border-radius: 10%;
     background-color: var(--sky-50);
@@ -180,6 +193,18 @@ label, .color-heading{
     color: var(--sky-400);
     font-family: 'Nerko One';
     font-size: 1.2rem;
+}
+
+#task-description{
+    width: 20rem;
+    height: 4rem;
+    resize: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+::-webkit-scrollbar{
+    display: none;
 }
 
 ::placeholder {
@@ -203,13 +228,24 @@ label, .color-heading{
     gap: 0.4rem;
 }
 
-#project-name:focus-visible {
+.form-input:focus-visible {
     outline: none;
     border: 1px solid var(--sky-400);
 }
 
-input[name="color"] {
+input[name="color"], input[name="priority"] {
     display: none;
+}
+
+.priority-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 4.5rem;
+    height: 2.5rem;
+    border-radius: 2rem;
+    background-color: var(--sky-200);
 }
 
 .button {
@@ -225,9 +261,15 @@ input[name="color"] {
     border: 0.2rem solid var(--sky-300);
 }
 
+.priority-button:hover, input[name="priority"]:checked ~ .priority-button {
+    transform: scale(1.2);
+    background-color: var(--sky-300);
+}
+
 input:checked ~ .button {
     border: 0.2rem solid var(--sky-300);
 }
+
 
 .black .button {
     background-color: #000000;
@@ -285,9 +327,17 @@ input:checked ~ .button {
     cursor: pointer;
 }
 
+
 .tasks-heading {
     color: var(--orange-200);
     font-size: 2rem;
+}
+
+.task-tab:hover, .task-tab.selected{
+    border-bottom: 0.25rem solid var(--sky-200);
+    border-left: 2rem solid transparent;
+    border-right: 2rem solid transparent;
+    border-radius: 3rem;
 }
 
 .project-heading {

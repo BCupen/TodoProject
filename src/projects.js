@@ -10,18 +10,22 @@ const projects = (()=>{
         pink: '#f43f5e'
     }
 
-    const project = (name, color, tasks)=>{
-        return {name, color, tasks};
+    const project = (name, color)=>{
+        return {name, color};
     };
 
-    function addProject(name, color, tasks=[]){
-        const newProject = project(name, color, tasks);
+    function addProject(name, color){
+        const newProject = project(name, color);
 
         projectList.push(newProject);
         return projectList;
     }
 
-    return {projectColors, addProject};
+    function getProjects(){
+        return projectList;
+    }
+
+    return {projectColors, addProject, getProjects};
 
 
 })();
