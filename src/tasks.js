@@ -1,4 +1,4 @@
-import {format, parseISO} from 'date-fns';
+import {format, parseISO, isBefore} from 'date-fns';
 
 const tasks = (()=>{
     let taskList = [];
@@ -21,6 +21,12 @@ const tasks = (()=>{
             const today = format(new Date(), 'yyyy-MM-dd');
             const todaysTasks = taskList.filter(task => task.dueDate == today);
             return todaysTasks;
+        }
+        if(filter == 'Upcoming'){
+            const today = new Date();
+            const nextWeek = format(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7), 'yyyy-MM-dd');
+            const upcomingTasks = taskList.filter(task => isBefore(parseISO(task.dueDate), parseISO(nextWeek)));
+            return upcomingTasks;
         }
 
     }

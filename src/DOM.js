@@ -7,6 +7,15 @@ import Low from './assets/low.svg';
 
 const DOM = (() =>{
     const colorCodes = projects.projectColors;
+    const taskBGColors = {
+        '(none)': '#e0f2fe',
+        black: '#d4d4d8',
+        red:'#fecaca',
+        yellow: '#fde68a',
+        green: '#d9f99d',
+        blue: '#a5f3fc',
+        pink: '#fecdd3',
+    };
     let currFilter = 'All';
 
     const hamburgerMenu = document.querySelector('.hamburger-menu');
@@ -14,13 +23,14 @@ const DOM = (() =>{
     const main = document.querySelector('.main');
     const tasksDiv = document.querySelector('.tasks');
     const filterHeading = document.querySelector('.filter-heading');
+    const tasksHeading = document.querySelector('div.main-heading');
     const addProjectButton = document.querySelector('.add-project');
     const projectsDiv = document.querySelector('.projects');
     const modal = document.querySelector('.modal');
     const modalBox = document.querySelector('.modal-content');
     const modalConfirmButton = document.querySelector('.confirm-button');
     const modalCancelButton = document.querySelector('.cancel-button');
-    const addTaskButton = document.querySelector('.add-task');
+    let addTaskButton = document.querySelector('.add-task');
     const form = document.querySelector('form');
     const filterTabs= document.querySelectorAll('.task-tab');
 
@@ -240,26 +250,37 @@ const DOM = (() =>{
 
     function showTasks(filter, project=''){
         filterHeading.textContent = filter;
+        console.log(filterHeading.textContent);
         const taskList = tasks.getTasks(filter, project);
         if(taskList.length > 0){
             tasksDiv.innerHTML = '';
             if(tasksDiv.classList.contains('none')){
                 tasksDiv.classList.remove('none');
+                tasksHeading.insertAdjacentHTML('beforeend' ,`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" class="bi bi-plus-square add-task" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>`);
+                addTaskButton = document.querySelector('.add-task');
+                addTaskButton.addEventListener('click', (e)=>{
+                    modal.style.display = 'block';
+                    _createNewTask(form);
+                })
             }
             for(let task of taskList){
                tasksDiv.append( _createTaskDiv(task));
             }
-
         }else{
             if(!tasksDiv.classList.contains('none')){
                 tasksDiv.classList.add('none');
+                tasksHeading.removeChild(tasksHeading.lastChild);
                 tasksDiv.innerHTML = `<span class="no-tasks-msg">You have no tasks. Why not create one now?</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" class="bi bi-plus-square add-task" viewBox="0 0 16 16">
                         <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>`;
-                const addTask = document.querySelector('.add-task');
-                addTask.addEventListener('click', (e)=>{
+                addTaskButton = document.querySelector('.add-task');
+                addTaskButton.addEventListener('click', (e)=>{
                     modal.style.display = 'block';
                     _createNewTask(form);
                 })

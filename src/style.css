@@ -394,3 +394,15 @@ input:checked ~ .button {
     transition-duration: 0.5s;
 }
 
+.task {
+    width: 15rem;
+    height: 10rem;
+    border-radius: 10%;
+    background-color: var(--sky-200);
+    padding: 1rem;
+    box-shadow: 3px 3px 1px -1px gray;
+}
+
+h3.title {
+    margin: 0;
+}
