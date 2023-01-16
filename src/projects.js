@@ -25,7 +25,16 @@ const projects = (()=>{
         return projectList;
     }
 
-    return {projectColors, addProject, getProjects};
+    function getProject(projectName){
+        for(let project of projectList){
+            // console.log(project);
+            if(project.name == projectName)
+                return project;
+        }
+        return null; 
+    }
+
+    return {projectColors, addProject, getProjects, getProject};
 
 
 })();
