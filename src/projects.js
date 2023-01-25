@@ -21,6 +21,12 @@ const projects = (()=>{
         return projectList;
     }
 
+    function editProject(projectIndex, projectName, color){
+        projectList[projectIndex].name = projectName;
+        projectList[projectIndex].color = color; 
+        return projectList;
+    }
+
     function getProjects(){
         return projectList;
     }
@@ -34,7 +40,11 @@ const projects = (()=>{
         return null; 
     }
 
-    return {projectColors, addProject, getProjects, getProject};
+    function getProjectByIndex(projectIndex){
+        return projectList[projectIndex];
+    }
+
+    return {projectColors, addProject, editProject,getProjects, getProject, getProjectByIndex};
 
 
 })();

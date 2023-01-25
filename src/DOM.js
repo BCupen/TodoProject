@@ -14,7 +14,7 @@ const DOM = (() =>{
     const colorCodes = projects.projectColors;
     const taskBGColors = {
         '(none)': '#e0f2fe',
-        black: '#d4d4d8',
+        black: '#d4d4d4',
         red:'#fecaca',
         yellow: '#fde68a',
         green: '#d9f99d',
@@ -38,6 +38,38 @@ const DOM = (() =>{
     let addTaskButton = document.querySelector('.add-task');
     const form = document.querySelector('form');
     const filterTabs= document.querySelectorAll('.task-tab');
+
+    function _setColorChoice(color) {
+        let black = false;
+        let red = false;
+        let yellow = false;
+        let green = false;
+        let blue = false;
+        let pink = false;
+        switch(color){
+            case 'black':
+                black = true;
+                break;
+            case 'red':
+                red = true;
+                break;
+            case 'yellow':
+                yellow = true;
+                break;
+            case 'green':
+                green = true;
+                break;
+            case 'blue':
+                blue = true;
+                break;
+            case 'pink':
+                pink = true;
+                break;
+            default:
+                return 'Invalid color choice';
+        }
+        return {black, red, yellow, green, blue, pink};
+    }
 
     function _createNewProject(form){
         const heading = document.querySelector('.modal-heading');
@@ -74,6 +106,56 @@ const DOM = (() =>{
         form.append(nameLabel, div);        
     }
 
+    function _editProject(form, projectIndex){
+        const project = projects.getProjectByIndex(projectIndex);
+        const heading = document.querySelector('.modal-heading');
+        heading.textContent = `Edit Project`;
+
+        const nameLabel = document.createElement('label');
+        nameLabel.textContent = `Project Name: `;
+        nameLabel.htmlFor = `project-name`
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = project.name;
+        input.name = `project-name`;
+        input.id = `project-name`;
+        input.dataset.pIndex = projectIndex;
+        input.maxLength = 15;
+        input.classList.add('form-input');
+
+        nameLabel.append(input);
+        const errorMsg = document.createElement('span');
+        errorMsg.classList.add('error-msg');
+        errorMsg.textContent = `This is a required field`; 
+
+        nameLabel.append(errorMsg);
+
+        const div = document.createElement('div');
+        div.classList.add('project-color');
+
+        const colorHeading = document.createElement('span');
+        colorHeading.textContent = 'Project Color';
+        colorHeading.classList.add('color-heading');
+
+        const colorDiv = document.createElement('div');
+        colorDiv.classList.add('project-color-picker');
+
+        const colorSettings = _setColorChoice(project.color);
+
+        const blackLabel = _createLabelRadio('black', colorSettings.black);
+        const redLabel = _createLabelRadio('red', colorSettings.red);
+        const yellowLabel = _createLabelRadio('yellow', colorSettings.yellow);
+        const greenLabel = _createLabelRadio('green', colorSettings.green);
+        const blueLabel = _createLabelRadio('blue', colorSettings.blue);
+        const pinkLabel = _createLabelRadio('pink', colorSettings.pink);
+
+        colorDiv.append(blackLabel, redLabel, yellowLabel, greenLabel, blueLabel, pinkLabel);
+
+        div.append(colorHeading, colorDiv);
+
+        form.append(nameLabel, div);
+    }
+
     function _createNewTask(form){
         const heading = document.querySelector('.modal-heading');
         heading.textContent =  `Create New Task`;
@@ -89,7 +171,7 @@ const DOM = (() =>{
         titleInput.classList.add('form-input');
         const errorMsg = document.createElement('span');
         errorMsg.classList.add('error-msg');
-        errorMsg.textContent = `This is a required field`
+        errorMsg.textContent = `This is a required field`;
         titleLabel.append(titleInput, errorMsg);
 
         const descLabel  = document.createElement('label');
@@ -111,7 +193,10 @@ const DOM = (() =>{
         dueDateInput.name = `task-due-date`;
         dueDateInput.min = format(new Date(), 'yyyy-MM-dd');
         dueDateInput.classList.add('form-input');
-        dateLabel.append(dueDateInput);
+        const dateErrorMsg = document.createElement('span');
+        dateErrorMsg.classList.add('error-msg');
+        dateErrorMsg.textContent = `This is a required field`
+        dateLabel.append(dueDateInput, dateErrorMsg);
 
         const priorityDiv = document.createElement('div');
         priorityDiv.classList.add('priority-div');
@@ -197,9 +282,10 @@ const DOM = (() =>{
         form.append(titleLabel, descLabel, dateLabel, priorityDiv, projectLabel);
     }
 
-    function _createTaskDiv(task){
+    function _createTaskDiv(task, index){
         const div = document.createElement('div');
         div.classList.add('task');
+        div.dataset.index = index;
 
         const headingDiv = document.createElement('div');
         headingDiv.classList.add('task-heading');
@@ -217,6 +303,15 @@ const DOM = (() =>{
         const priorityIcon = new Image();
         priorityIcon.src = prioritySVG[task.priority];
         prioritySpan.append(priorityIcon);
+
+        checkbox.addEventListener('change', (e)=>{
+            if(checkbox.checked){
+                div.classList.add('completed');
+            }else{
+                div.classList.remove('completed');
+            }
+            
+        })
 
         const dueDateSpan = document.createElement('span');
         dueDateSpan.classList.add('task-dueDateSpan');
@@ -310,8 +405,8 @@ const DOM = (() =>{
                     _createNewTask(form);
                 })
             }
-            for(let task of taskList){
-               tasksDiv.append( _createTaskDiv(task));
+            for(let [i,task] of taskList.entries()){
+               tasksDiv.append( _createTaskDiv(task, i));
             }
         }else{
             if(!tasksDiv.classList.contains('none')){
@@ -335,10 +430,10 @@ const DOM = (() =>{
         //clear the projects
         projectsDiv.innerHTML = ``;
 
-        for(let project of projectList){
+        for(let [i, project] of projectList.entries()){
             const div = document.createElement('div');
             div.classList.add('project');
-
+            div.dataset.index = i;
             const colorSpan = document.createElement('span');
             colorSpan.classList.add('project-color');
             colorSpan.style.backgroundColor = colorCodes[project.color];
@@ -360,6 +455,12 @@ const DOM = (() =>{
             div.append(colorSpan, projectName, buttonSpan);
             projectsDiv.append(div);
         }
+        const editButtons = document.querySelectorAll('.edit');
+        editButtons.forEach((button) => button.addEventListener('click', (e)=>{
+            const div = button.parentElement.parentElement;
+            modal.style.display = 'block';
+            _editProject(form, div.dataset.index);
+        }))
     }
     
     function loadHandlers(){
@@ -384,11 +485,14 @@ const DOM = (() =>{
         modalConfirmButton.addEventListener('click', (e)=>{
             //need to check modal header
             const modalHeading = document.querySelector('.modal-heading');
-            if(modalHeading.textContent == 'Create New Project'){
+            if(modalHeading.textContent == 'Create New Project' || modalHeading.textContent == `Edit Project`){
                 const name = document.querySelector('#project-name');
                 const color = document.querySelector(`input[type='radio']:checked`);
                 if(name.value){
-                    const list = projects.addProject(name.value, color.value);
+                    console.log(name.value);
+                    const list = (modalHeading.textContent == `Create New Project`) ? 
+                                    projects.addProject(name.value, color.value) :
+                                    projects.editProject(name.dataset.pIndex, name.value, color.value);
                     document.querySelector('.create-project').reset();
                     modal.style.display = 'none';
                     showProjects(list);    
@@ -401,9 +505,9 @@ const DOM = (() =>{
                 } 
             }else if(modalHeading.textContent == `Create New Task`){
                 const taskTitle = document.querySelector('#task-title');
-                if(taskTitle.value){
+                const taskDue = document.querySelector('#task-due-date');
+                if(taskTitle.value && taskDue.value){
                     const taskDesc = document.querySelector('#task-description');
-                    const taskDue = document.querySelector('#task-due-date');
                     const taskPriority = document.querySelector(`input[type='radio']:checked`);
                     const taskProject = document.querySelector(`#select-project`);
                     tasks.addTask(taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, taskProject.value);
@@ -412,10 +516,16 @@ const DOM = (() =>{
                     showTasks(currFilter);    
                     _clearModalForm(form);
                 }else{
-                    const errorMsg = document.querySelector('.error-msg');
-                    errorMsg.style.display = 'block';
-                    const input = document.querySelector('#project-name');
-                    input.style.border = '1px solid #f87171';
+                    if(!taskTitle.value){
+                        const errorMsg = taskTitle.nextElementSibling;
+                        errorMsg.style.display = 'block';
+                        taskTitle.style.border = '1px solid #f87171';  
+                    }
+                    if(!taskDue.value){
+                        const errorMsg = taskDue.nextElementSibling;
+                        errorMsg.style.display = 'block';
+                        taskDue.style.border = '1px solid #f87171';  
+                    }
                 }
             }
                 
