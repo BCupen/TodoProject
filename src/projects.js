@@ -41,10 +41,17 @@ const projects = (()=>{
     }
 
     function getProjectByIndex(projectIndex){
-        return projectList[projectIndex];
+        if(projectIndex >= 0)
+            return projectList[projectIndex];
+        return null;
     }
 
-    return {projectColors, addProject, editProject,getProjects, getProject, getProjectByIndex};
+    function deleteProjectByIndex(projectIndex){
+        projectList.splice(projectIndex, 1);
+        return projectList;
+    }
+
+    return {projectColors, addProject, editProject,getProjects, getProject, getProjectByIndex, deleteProjectByIndex};
 
 
 })();

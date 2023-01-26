@@ -3,18 +3,18 @@ import {format, parseISO, isBefore} from 'date-fns';
 const tasks = (()=>{
     let taskList = [];
 
-    const task = (title, description, dueDate, priority, project)=>{
-        return {title, description, dueDate, priority, project};
+    const task = (title, description, dueDate, priority, projectIndex)=>{
+        return {title, description, dueDate, priority, projectIndex};
     };
 
-    function addTask(title, dueDate, description, priority, project){
+    function addTask(title, dueDate, description, priority, projectIndex){
         if(description == '')
             description = `(no description)`;
-        const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, project);
+        const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, projectIndex);
         taskList.unshift(newTask);
     }
 
-    function getTasks(filter, project=''){
+    function getTasks(filter, projectIndex=-1){
         if(filter == 'All')
             return taskList;
         if(filter == 'Today'){

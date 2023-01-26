@@ -264,15 +264,15 @@ const DOM = (() =>{
         projectSelect.id = `select-project`;
         projectSelect.classList.add('form-input');
         const noneOption = document.createElement('option');
-        noneOption.value = `(none)`;
+        noneOption.value = -1;
         noneOption.textContent = `(none)`;
         noneOption.selected = true;
         projectSelect.append(noneOption);
 
         const currProjects = projects.getProjects();
-        for(let project of currProjects){
+        for(let [i, project] of currProjects.entries()){
             const option = document.createElement('option');
-            option.value = project.name;
+            option.value = i;
             option.textContent = project.name;
             projectSelect.append(option);
         }
@@ -280,6 +280,20 @@ const DOM = (() =>{
         projectLabel.append(projectSelect);
 
         form.append(titleLabel, descLabel, dateLabel, priorityDiv, projectLabel);
+    }
+
+    function _deleteProject(form, projectIndex){
+        const heading = document.querySelector('.modal-heading');
+        heading.textContent =  `Are you sure?`;
+
+        const project = projects.getProjectByIndex(projectIndex);
+
+        const messageSpan = document.createElement('span');
+        messageSpan.classList.add('delete-message');
+        messageSpan.textContent = `Are you sure you want to delete the following project: ${project.name}?`;
+        messageSpan.dataset.pIndex = projectIndex;
+
+        form.append(messageSpan);
     }
 
     function _createTaskDiv(task, index){
@@ -333,10 +347,10 @@ const DOM = (() =>{
 
         footerDiv.append(buttonSpan);
         
-        const taskProject = projects.getProject(task.project);
+        const taskProject = projects.getProjectByIndex(task.projectIndex);
         if(taskProject != null)
             div.style.backgroundColor = taskBGColors[taskProject.color];
-        else div.style.backgroundColor = taskBGColors[task.project];
+        else div.style.backgroundColor = taskBGColors['(none)'];
 
         div.append(headingDiv, dueDateSpan, footerDiv);
         return div;
@@ -456,10 +470,16 @@ const DOM = (() =>{
             projectsDiv.append(div);
         }
         const editButtons = document.querySelectorAll('.edit');
+        const deleteButtons = document.querySelectorAll('.delete');
         editButtons.forEach((button) => button.addEventListener('click', (e)=>{
             const div = button.parentElement.parentElement;
             modal.style.display = 'block';
             _editProject(form, div.dataset.index);
+        }))
+        deleteButtons.forEach((button) => button.addEventListener('click', (e)=>{
+            const div = button.parentElement.parentElement;
+            modal.style.display = 'block';
+            _deleteProject(form, div.dataset.index);
         }))
     }
     
@@ -489,13 +509,13 @@ const DOM = (() =>{
                 const name = document.querySelector('#project-name');
                 const color = document.querySelector(`input[type='radio']:checked`);
                 if(name.value){
-                    console.log(name.value);
                     const list = (modalHeading.textContent == `Create New Project`) ? 
                                     projects.addProject(name.value, color.value) :
                                     projects.editProject(name.dataset.pIndex, name.value, color.value);
                     document.querySelector('.create-project').reset();
                     modal.style.display = 'none';
-                    showProjects(list);    
+                    showProjects(list);
+                    showTasks(currFilter);    
                     _clearModalForm(form); 
                 }else{
                     const errorMsg = document.querySelector('.error-msg');
@@ -510,7 +530,7 @@ const DOM = (() =>{
                     const taskDesc = document.querySelector('#task-description');
                     const taskPriority = document.querySelector(`input[type='radio']:checked`);
                     const taskProject = document.querySelector(`#select-project`);
-                    tasks.addTask(taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, taskProject.value);
+                    tasks.addTask(taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, parseInt(taskProject.value));
                     document.querySelector('.create-project').reset();
                     modal.style.display = 'none';
                     showTasks(currFilter);    
@@ -527,6 +547,12 @@ const DOM = (() =>{
                         taskDue.style.border = '1px solid #f87171';  
                     }
                 }
+            }else if(modalHeading.textContent == `Are you sure?`){
+                const messageSpan = document.querySelector('.delete-message');
+                const list = projects.deleteProjectByIndex(messageSpan.dataset.pIndex);
+                modal.style.display = 'none';
+                showProjects(list);
+                _clearModalForm(form);
             }
                 
         })
