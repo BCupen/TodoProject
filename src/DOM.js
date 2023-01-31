@@ -552,6 +552,8 @@ const DOM = (() =>{
                 const list = projects.deleteProjectByIndex(messageSpan.dataset.pIndex);
                 modal.style.display = 'none';
                 showProjects(list);
+                tasks.editTasksProjects(parseInt(messageSpan.dataset.pIndex));
+                showTasks(currFilter);
                 _clearModalForm(form);
             }
                 

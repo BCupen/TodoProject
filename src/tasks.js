@@ -31,7 +31,17 @@ const tasks = (()=>{
 
     }
 
-    return {addTask, getTasks}
+    //if a project is deleted, update all tasks that were assigned to that project
+    function editTasksProjects(pIndex){
+        for(let [i, task] of taskList.entries()){
+            if(task.projectIndex == pIndex){
+                task.projectIndex = -1;
+                taskList[i] = task;
+            }
+        }
+    }
+
+    return {addTask, getTasks, editTasksProjects}
 })();
 
 export default tasks;
