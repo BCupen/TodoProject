@@ -81,12 +81,15 @@ h1{
 }
 
 .project {
-    background-color: var(--sky-200);
     display: flex;
     align-items: center;
     gap: 1rem;
     padding-left: 0.5rem;
     min-height: 4vh;
+}
+
+.project:hover, .project.active {
+    background-color: var(--sky-200);
 }
 
 .project .project-color {

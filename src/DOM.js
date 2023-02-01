@@ -401,9 +401,14 @@ const DOM = (() =>{
         form.innerHTML = '';
     }
 
-    function showTasks(filter, project=''){
-        filterHeading.textContent = filter;
-        const taskList = tasks.getTasks(filter, project);
+    function showTasks(filter, projectIndex = -1){
+        if(projectIndex == -1){
+            filterHeading.textContent = filter;
+        }else{
+            const project = projects.getProjectByIndex(projectIndex);
+            filterHeading.textContent = project.name;
+        }        
+        const taskList = tasks.getTasks(filter, projectIndex);
         if(taskList.length > 0){
             tasksDiv.innerHTML = '';
             if(tasksDiv.classList.contains('none')){
@@ -422,6 +427,10 @@ const DOM = (() =>{
             for(let [i,task] of taskList.entries()){
                tasksDiv.append( _createTaskDiv(task, i));
             }
+            const allTasks = document.querySelectorAll('.task');
+            allTasks.forEach((task) => task.addEventListener('click', (e)=>{
+                console.log(e.target);
+            }))
         }else{
             if(!tasksDiv.classList.contains('none')){
                 tasksDiv.classList.add('none');
@@ -471,6 +480,7 @@ const DOM = (() =>{
         }
         const editButtons = document.querySelectorAll('.edit');
         const deleteButtons = document.querySelectorAll('.delete');
+        const allProjects = document.querySelectorAll('.project');
         editButtons.forEach((button) => button.addEventListener('click', (e)=>{
             const div = button.parentElement.parentElement;
             modal.style.display = 'block';
@@ -480,6 +490,13 @@ const DOM = (() =>{
             const div = button.parentElement.parentElement;
             modal.style.display = 'block';
             _deleteProject(form, div.dataset.index);
+        }))
+        allProjects.forEach((project)=> project.addEventListener('click', (e)=>{
+            allProjects.forEach(project =>  project.classList.remove('active'));
+            filterTabs.forEach(tab => tab.classList.remove('selected'));
+            project.classList.add('active');
+            currFilter = 'All';
+            showTasks(currFilter, project.dataset.index);
         }))
     }
     
@@ -571,6 +588,8 @@ const DOM = (() =>{
 
         filterTabs.forEach(filter => filter.addEventListener('click', (e)=>{
             filterTabs.forEach(filter => filter.classList.remove('selected'));
+            const allProjects = document.querySelectorAll('.project');
+            allProjects.forEach(project => project.classList.remove('active'));
             filter.classList.add('selected');
             const tabHeading = filter.getElementsByTagName('h3')[0];
             currFilter = tabHeading.textContent;

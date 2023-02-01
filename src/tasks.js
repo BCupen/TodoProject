@@ -15,8 +15,11 @@ const tasks = (()=>{
     }
 
     function getTasks(filter, projectIndex=-1){
-        if(filter == 'All')
-            return taskList;
+        if(filter == 'All'){
+            if(projectIndex == -1)
+                return taskList;
+            else return taskList.filter(task => task.projectIndex == projectIndex);
+        }
         if(filter == 'Today'){
             const today = format(new Date(), 'yyyy-MM-dd');
             const todaysTasks = taskList.filter(task => task.dueDate == today);
@@ -34,8 +37,12 @@ const tasks = (()=>{
     //if a project is deleted, update all tasks that were assigned to that project
     function editTasksProjects(pIndex){
         for(let [i, task] of taskList.entries()){
+            console.log(task.projectIndex)
             if(task.projectIndex == pIndex){
                 task.projectIndex = -1;
+                taskList[i] = task;
+            }else if(task.projectIndex > pIndex){
+                task.projectIndex -= 1;
                 taskList[i] = task;
             }
         }
