@@ -8,8 +8,10 @@ const tasks = (()=>{
     };
 
     function addTask(title, dueDate, description, priority, projectIndex){
-        if(description == '')
+        if(description == ''){
             description = `(no description)`;
+        }
+            
         const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, projectIndex);
         taskList.unshift(newTask);
     }

@@ -406,6 +406,7 @@ input:checked ~ .button {
 }
 
 .task {
+    cursor: pointer;
     color: var(--sky-300);
     display: flex;
     flex-direction: column;
@@ -467,6 +468,12 @@ h3.title {
     font-size: 1.5rem;
 }
 
+.task-descriptionSpan, .task-projectSpan {
+    padding-left: 0.5rem;
+    display: none;
+    font-size: 1.5rem;
+}
+
 .task-footer {
     display: flex;
     justify-content: flex-end;
@@ -512,7 +519,16 @@ h3.title {
     fill: var(--grey-600);
 }
 
-.task:hover {
+.task.expand{
     width: 25rem;
-    height: 10rem;
+    height: 13rem;
+}
+
+.task.expand .task-dueDateSpan{
+    color: var(--sky-400);
+}
+
+.task.expand  .task-descriptionSpan, .task.expand .task-projectSpan{
+    display: flex;
+    overflow-wrap: break-all;
 }

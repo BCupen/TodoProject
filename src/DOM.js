@@ -156,7 +156,7 @@ const DOM = (() =>{
         form.append(nameLabel, div);
     }
 
-    function _createNewTask(form){
+    function _createNewTask(form, selectedProjectIndex=-1){
         const heading = document.querySelector('.modal-heading');
         heading.textContent =  `Create New Task`;
 
@@ -266,7 +266,8 @@ const DOM = (() =>{
         const noneOption = document.createElement('option');
         noneOption.value = -1;
         noneOption.textContent = `(none)`;
-        noneOption.selected = true;
+        if(selectedProjectIndex == -1)
+            noneOption.setAttribute('selected', 'selected');
         projectSelect.append(noneOption);
 
         const currProjects = projects.getProjects();
@@ -274,6 +275,11 @@ const DOM = (() =>{
             const option = document.createElement('option');
             option.value = i;
             option.textContent = project.name;
+            if(selectedProjectIndex == i){
+                console.log('here');
+                option.setAttribute('selected', 'selected');
+            }
+                
             projectSelect.append(option);
         }
 
@@ -323,9 +329,12 @@ const DOM = (() =>{
                 div.classList.add('completed');
             }else{
                 div.classList.remove('completed');
-            }
-            
+            }  
         })
+
+        const descriptionSpan = document.createElement('span');
+        descriptionSpan.classList.add('task-descriptionSpan');
+        descriptionSpan.textContent = task.description;
 
         const dueDateSpan = document.createElement('span');
         dueDateSpan.classList.add('task-dueDateSpan');
@@ -346,13 +355,22 @@ const DOM = (() =>{
                     </svg>`;
 
         footerDiv.append(buttonSpan);
+
+        const projectSpan = document.createElement('span');
+        projectSpan.classList.add('task-projectSpan');
+        projectSpan.textContent = `Project: `;
         
         const taskProject = projects.getProjectByIndex(task.projectIndex);
-        if(taskProject != null)
+        if(taskProject != null){
             div.style.backgroundColor = taskBGColors[taskProject.color];
-        else div.style.backgroundColor = taskBGColors['(none)'];
+            projectSpan.textContent +=  taskProject.name;
+        }   
+        else{
+            div.style.backgroundColor = taskBGColors['(none)'];
+            projectSpan.textContent += `(none)`;
+        }
 
-        div.append(headingDiv, dueDateSpan, footerDiv);
+        div.append(headingDiv, descriptionSpan, dueDateSpan, projectSpan, footerDiv);
         return div;
     }
 
@@ -401,7 +419,7 @@ const DOM = (() =>{
         form.innerHTML = '';
     }
 
-    function showTasks(filter, projectIndex = -1){
+    function showTasks(filter, projectIndex=-1){
         if(projectIndex == -1){
             filterHeading.textContent = filter;
         }else{
@@ -421,7 +439,7 @@ const DOM = (() =>{
                 addTaskButton = document.querySelector('.add-task');
                 addTaskButton.addEventListener('click', (e)=>{
                     modal.style.display = 'block';
-                    _createNewTask(form);
+                    _createNewTask(form, addTaskButton.dataset.pIndex);
                 })
             }
             for(let [i,task] of taskList.entries()){
@@ -429,7 +447,15 @@ const DOM = (() =>{
             }
             const allTasks = document.querySelectorAll('.task');
             allTasks.forEach((task) => task.addEventListener('click', (e)=>{
-                console.log(e.target);
+                const checkbox = task.querySelector('input');
+                if(e.target != checkbox){
+                    if(!task.classList.contains('expand')){
+                        allTasks.forEach(task => task.classList.remove('expand'));
+                        task.classList.add('expand');
+                    }
+                    else task.classList.remove('expand');
+                }
+                
             }))
         }else{
             if(!tasksDiv.classList.contains('none')){
@@ -441,9 +467,10 @@ const DOM = (() =>{
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>`;
                 addTaskButton = document.querySelector('.add-task');
+                addTaskButton.dataset.pIndex = projectIndex;
                 addTaskButton.addEventListener('click', (e)=>{
                     modal.style.display = 'block';
-                    _createNewTask(form);
+                    _createNewTask(form, projectIndex);
                 })
             }            
         }
@@ -496,6 +523,7 @@ const DOM = (() =>{
             filterTabs.forEach(tab => tab.classList.remove('selected'));
             project.classList.add('active');
             currFilter = 'All';
+            addTaskButton.dataset.pIndex = project.dataset.index;
             showTasks(currFilter, project.dataset.index);
         }))
     }
@@ -522,6 +550,7 @@ const DOM = (() =>{
         modalConfirmButton.addEventListener('click', (e)=>{
             //need to check modal header
             const modalHeading = document.querySelector('.modal-heading');
+            const projIndex = addTaskButton.dataset.pIndex;
             if(modalHeading.textContent == 'Create New Project' || modalHeading.textContent == `Edit Project`){
                 const name = document.querySelector('#project-name');
                 const color = document.querySelector(`input[type='radio']:checked`);
@@ -532,7 +561,7 @@ const DOM = (() =>{
                     document.querySelector('.create-project').reset();
                     modal.style.display = 'none';
                     showProjects(list);
-                    showTasks(currFilter);    
+                    showTasks(currFilter, projIndex);    
                     _clearModalForm(form); 
                 }else{
                     const errorMsg = document.querySelector('.error-msg');
@@ -550,7 +579,8 @@ const DOM = (() =>{
                     tasks.addTask(taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, parseInt(taskProject.value));
                     document.querySelector('.create-project').reset();
                     modal.style.display = 'none';
-                    showTasks(currFilter);    
+                    console.log(projIndex);
+                    showTasks(currFilter, projIndex);    
                     _clearModalForm(form);
                 }else{
                     if(!taskTitle.value){
@@ -570,20 +600,25 @@ const DOM = (() =>{
                 modal.style.display = 'none';
                 showProjects(list);
                 tasks.editTasksProjects(parseInt(messageSpan.dataset.pIndex));
+                filterTabs.forEach(tab =>{
+                    const tabHeading = tab.getElementsByTagName('h3')[0].textContent;
+                    if(tabHeading == `All`)
+                        tab.classList.add('selected');
+                })
                 showTasks(currFilter);
                 _clearModalForm(form);
-            }
-                
+            }    
         })
 
         modalCancelButton.addEventListener('click', (e)=>{
             modal.style.display = "none";
+            addTaskButton.dataset.pIndex = -1;
             _clearModalForm(form);
         })
 
         addTaskButton.addEventListener('click', (e)=>{
             modal.style.display = 'block';
-            _createNewTask(form);
+            _createNewTask(form, addTaskButton.dataset.pIndex);
         })
 
         filterTabs.forEach(filter => filter.addEventListener('click', (e)=>{
@@ -593,6 +628,7 @@ const DOM = (() =>{
             filter.classList.add('selected');
             const tabHeading = filter.getElementsByTagName('h3')[0];
             currFilter = tabHeading.textContent;
+            addTaskButton.dataset.pIndex = -1;
             showTasks(currFilter);
         }))
     }
