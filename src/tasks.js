@@ -60,7 +60,11 @@ const tasks = (()=>{
         taskList[taskIndex] = newTask;
     }
 
-    return {addTask, getTasks, getTaskByIndex, editTasksProjects, editTask}
+    function deleteTaskByIndex(taskIndex){
+        taskList.splice(taskIndex, 1);
+    }
+
+    return {addTask, getTasks, getTaskByIndex, editTasksProjects, editTask, deleteTaskByIndex}
 })();
 
 export default tasks;

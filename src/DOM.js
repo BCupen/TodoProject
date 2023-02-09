@@ -462,6 +462,19 @@ const DOM = (() =>{
         form.append(messageSpan);
     }
 
+    function _deleteTask(form, taskIndex){
+        const heading = document.querySelector('.modal-heading');
+        heading.textContent =  `Delete Task?`;
+
+        const task = tasks.getTaskByIndex(taskIndex);
+        const messageSpan = document.createElement('span');
+        messageSpan.classList.add('delete-message');
+        messageSpan.textContent = `Are you sure you want to delete the following task: ${task.title}?`;
+        messageSpan.dataset.tIndex = taskIndex;
+
+        form.append(messageSpan);
+    }
+
     function _createTaskDiv(task, index){
         const div = document.createElement('div');
         div.classList.add('task');
@@ -609,14 +622,22 @@ const DOM = (() =>{
             }
             const allTasks = document.querySelectorAll('.task');
             const editTaskButtons = document.querySelectorAll('.task-edit');
+            const deleteTaskButtons = document.querySelectorAll('.task-delete');
             editTaskButtons.forEach((button) => button.addEventListener('click', (e)=>{
                 const task = button.parentElement.parentElement.parentElement;
                 modal.style.display = 'block';
                 _editTask(form, task.dataset.index);
             }))
+            deleteTaskButtons.forEach((button) => button.addEventListener('click', (e)=>{
+                const task = button.parentElement.parentElement.parentElement;
+                modal.style.display = 'block';
+                _deleteTask(form, task.dataset.index);
+            }))
             allTasks.forEach((task) => task.addEventListener('click', (e)=>{
                 const checkbox = task.querySelector('input');
-                if(e.target != checkbox){
+                const editDeleteSpan = task.querySelector('.task-edit-delete');
+
+                if(e.target != checkbox && e.target.parentElement != editDeleteSpan){
                     if(!task.classList.contains('expand')){
                         allTasks.forEach(task => task.classList.remove('expand'));
                         task.classList.add('expand');
@@ -637,7 +658,7 @@ const DOM = (() =>{
                 addTaskButton.dataset.pIndex = projectIndex;
                 addTaskButton.addEventListener('click', (e)=>{
                     modal.style.display = 'block';
-                    _createNewTask(form, projectIndex);
+                    _createNewTask(form, addTaskButton.dataset.pIndex);
                 })
             }            
         }
@@ -691,7 +712,7 @@ const DOM = (() =>{
             project.classList.add('active');
             currFilter = 'All';
             addTaskButton.dataset.pIndex = project.dataset.index;
-            showTasks(currFilter, project.dataset.index);
+            showTasks(currFilter, addTaskButton.dataset.pIndex);
         }))
     }
     
@@ -775,7 +796,13 @@ const DOM = (() =>{
                 })
                 showTasks(currFilter);
                 _clearModalForm(form);
-            }    
+            }else if(modalHeading.textContent == `Delete Task?`){
+                const messageSpan = document.querySelector('.delete-message');
+                tasks.deleteTaskByIndex(messageSpan.dataset.tIndex);
+                modal.style.display = 'none';
+                showTasks(currFilter, addTaskButton.dataset.pIndex);
+                _clearModalForm(form);
+            }   
         })
 
         modalCancelButton.addEventListener('click', (e)=>{
