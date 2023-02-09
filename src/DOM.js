@@ -71,6 +71,26 @@ const DOM = (() =>{
         return {black, red, yellow, green, blue, pink};
     }
 
+    function _setPriorityChoice(priority){
+        let high = false;
+        let medium = false;
+        let low = false;
+        switch(priority){
+            case 'high':
+                high = true;
+                break;
+            case 'medium':
+                medium = true;
+                break;
+            case 'low':
+                low = true;
+                break;
+            default:
+                return 'Invalid priority choice';
+        }
+        return {high, medium, low};
+    }
+
     function _createNewProject(form){
         const heading = document.querySelector('.modal-heading');
         heading.textContent = `Create New Project`;
@@ -288,6 +308,146 @@ const DOM = (() =>{
         form.append(titleLabel, descLabel, dateLabel, priorityDiv, projectLabel);
     }
 
+    function _editTask(form, taskIndex){
+        const task = tasks.getTaskByIndex(taskIndex);
+        const priorityChoices = _setPriorityChoice(task.priority);
+
+        const heading = document.querySelector('.modal-heading');
+        heading.textContent =  `Edit Task`;
+
+        const titleLabel = document.createElement('label');
+        titleLabel.textContent = `Title: `;
+        titleLabel.htmlFor = 'task-title';
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.id = 'task-title';
+        titleInput.name = 'task-title';
+        titleInput.value = task.title;
+        titleInput.dataset.tIndex = taskIndex;
+        titleInput.maxLength = 25;
+        titleInput.classList.add('form-input');
+        const errorMsg = document.createElement('span');
+        errorMsg.classList.add('error-msg');
+        errorMsg.textContent = `This is a required field`;
+        titleLabel.append(titleInput, errorMsg);
+
+        const descLabel  = document.createElement('label');
+        descLabel.textContent = `Description: `;
+        descLabel.htmlFor = `task-description`;
+        const descTextArea = document.createElement('textarea');
+        descTextArea.name = `task-description`;
+        descTextArea.id = `task-description`;
+        descTextArea.value = task.description;
+        descTextArea.maxLength = 100;
+        descTextArea.classList.add('form-input');
+        descLabel.append(descTextArea);
+
+        const dateLabel = document.createElement('label');
+        dateLabel.textContent = `Due Date: `;
+        dateLabel.htmlFor = `task-due-date`;
+        const dueDateInput = document.createElement('input');
+        dueDateInput.type = 'date';
+        dueDateInput.id = `task-due-date`;
+        dueDateInput.name = `task-due-date`;
+        dueDateInput.value = task.dueDate;
+        dueDateInput.min = format(new Date(), 'yyyy-MM-dd');
+        dueDateInput.classList.add('form-input');
+        const dateErrorMsg = document.createElement('span');
+        dateErrorMsg.classList.add('error-msg');
+        dateErrorMsg.textContent = `This is a required field`
+        dateLabel.append(dueDateInput, dateErrorMsg);
+
+        const priorityDiv = document.createElement('div');
+        priorityDiv.classList.add('priority-div');
+        const priorityHeading = document.createElement('span');
+        priorityHeading.textContent = `Task Priority: `;
+        priorityHeading.classList.add('priority-heading');
+
+        const highPriorityLabel = document.createElement('label');
+        highPriorityLabel.htmlFor = `high-priority`;
+        highPriorityLabel.classList.add('high-priority');
+        const highPriorityRadio = document.createElement('input');
+        highPriorityRadio.type = `radio`;
+        highPriorityRadio.name = `priority`;
+        highPriorityRadio.id = `high-priority`;
+        highPriorityRadio.value = `high`;
+        highPriorityRadio.checked = priorityChoices.high;
+        const highSpan = document.createElement('span');
+        highSpan.classList.add('priority-button');
+        const highIcon = new Image();
+        highIcon.src = High;
+        highSpan.append(highIcon);
+        highPriorityLabel.append(highPriorityRadio, highSpan);
+
+        const mediumPriorityLabel = document.createElement('label');
+        mediumPriorityLabel.htmlFor = `medium-priority`;
+        mediumPriorityLabel.classList.add('medium-priority');
+        const mediumPriorityRadio = document.createElement('input');
+        mediumPriorityRadio.type = `radio`;
+        mediumPriorityRadio.name = `priority`;
+        mediumPriorityRadio.id = `medium-priority`;
+        mediumPriorityRadio.value = `medium`;
+        mediumPriorityRadio.checked = priorityChoices.medium;
+        const mediumSpan = document.createElement('span');
+        mediumSpan.classList.add('priority-button');
+        const mediumIcon = new Image();
+        mediumIcon.src = Medium;
+        mediumSpan.append(mediumIcon);
+        mediumPriorityLabel.append(mediumPriorityRadio, mediumSpan);
+
+        const lowPriorityLabel = document.createElement('label');
+        lowPriorityLabel.htmlFor = `low-priority`;
+        lowPriorityLabel.classList.add('low-priority');
+        const lowPriorityRadio = document.createElement('input');
+        lowPriorityRadio.type = `radio`;
+        lowPriorityRadio.name = `priority`;
+        lowPriorityRadio.id = `low-priority`;
+        lowPriorityRadio.value = `low`;
+        lowPriorityRadio.checked = priorityChoices.low;
+        const lowSpan = document.createElement('span');
+        lowSpan.classList.add('priority-button');
+        const lowIcon = new Image();
+        lowIcon.src = Low;
+        lowSpan.append(lowIcon);
+        lowPriorityLabel.append(lowPriorityRadio, lowSpan);
+
+        const priorities = document.createElement('div');
+        priorities.classList.add('priorities');
+        priorities.append(highPriorityLabel, mediumPriorityLabel, lowPriorityLabel);
+        
+        priorityDiv.append(priorityHeading, priorities);
+
+        const projectLabel = document.createElement('label');
+        projectLabel.htmlFor= 'select-project';
+        projectLabel.textContent = `Project: `;
+        const projectSelect = document.createElement('select');
+        projectSelect.name = `select-project`;
+        projectSelect.id = `select-project`;
+        projectSelect.classList.add('form-input');
+        const noneOption = document.createElement('option');
+        noneOption.value = -1;
+        noneOption.textContent = `(none)`;
+        if(task.projectIndex == -1)
+            noneOption.setAttribute('selected', 'selected');
+        projectSelect.append(noneOption);
+
+        const currProjects = projects.getProjects();
+        for(let [i, project] of currProjects.entries()){
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = project.name;
+            if(task.projectIndex == i){
+                option.setAttribute('selected', 'selected');
+            }
+                
+            projectSelect.append(option);
+        }
+
+        projectLabel.append(projectSelect);
+
+        form.append(titleLabel, descLabel, dateLabel, priorityDiv, projectLabel);
+    }
+
     function _deleteProject(form, projectIndex){
         const heading = document.querySelector('.modal-heading');
         heading.textContent =  `Are you sure?`;
@@ -436,7 +596,9 @@ const DOM = (() =>{
                     <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>`);
+                
                 addTaskButton = document.querySelector('.add-task');
+                addTaskButton.dataset.pIndex = projectIndex;
                 addTaskButton.addEventListener('click', (e)=>{
                     modal.style.display = 'block';
                     _createNewTask(form, addTaskButton.dataset.pIndex);
@@ -446,6 +608,12 @@ const DOM = (() =>{
                tasksDiv.append( _createTaskDiv(task, i));
             }
             const allTasks = document.querySelectorAll('.task');
+            const editTaskButtons = document.querySelectorAll('.task-edit');
+            editTaskButtons.forEach((button) => button.addEventListener('click', (e)=>{
+                const task = button.parentElement.parentElement.parentElement;
+                modal.style.display = 'block';
+                _editTask(form, task.dataset.index);
+            }))
             allTasks.forEach((task) => task.addEventListener('click', (e)=>{
                 const checkbox = task.querySelector('input');
                 if(e.target != checkbox){
@@ -454,8 +622,7 @@ const DOM = (() =>{
                         task.classList.add('expand');
                     }
                     else task.classList.remove('expand');
-                }
-                
+                }    
             }))
         }else{
             if(!tasksDiv.classList.contains('none')){
@@ -569,17 +736,18 @@ const DOM = (() =>{
                     const input = document.querySelector('#project-name');
                     input.style.border = '1px solid #f87171';
                 } 
-            }else if(modalHeading.textContent == `Create New Task`){
+            }else if(modalHeading.textContent == `Create New Task` || modalHeading.textContent == `Edit Task`){
                 const taskTitle = document.querySelector('#task-title');
                 const taskDue = document.querySelector('#task-due-date');
                 if(taskTitle.value && taskDue.value){
                     const taskDesc = document.querySelector('#task-description');
                     const taskPriority = document.querySelector(`input[type='radio']:checked`);
                     const taskProject = document.querySelector(`#select-project`);
-                    tasks.addTask(taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, parseInt(taskProject.value));
+                    if(modalHeading.textContent == `Create New Task`)
+                        tasks.addTask(taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, parseInt(taskProject.value));
+                    else tasks.editTask(taskTitle.dataset.tIndex, taskTitle.value, taskDue.value, taskDesc.value, taskPriority.value, parseInt(taskProject.value));
                     document.querySelector('.create-project').reset();
                     modal.style.display = 'none';
-                    console.log(projIndex);
                     showTasks(currFilter, projIndex);    
                     _clearModalForm(form);
                 }else{

@@ -33,7 +33,12 @@ const tasks = (()=>{
             const upcomingTasks = taskList.filter(task => isBefore(parseISO(task.dueDate), parseISO(nextWeek)));
             return upcomingTasks;
         }
+    }
 
+    function getTaskByIndex(taskIndex){
+        if(taskIndex >= 0)
+            return taskList[taskIndex];
+        return null;
     }
 
     //if a project is deleted, update all tasks that were assigned to that project
@@ -50,7 +55,12 @@ const tasks = (()=>{
         }
     }
 
-    return {addTask, getTasks, editTasksProjects}
+    function editTask(taskIndex, title, dueDate, description, priority, projectIndex){
+        const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, projectIndex);
+        taskList[taskIndex] = newTask;
+    }
+
+    return {addTask, getTasks, getTaskByIndex, editTasksProjects, editTask}
 })();
 
 export default tasks;
