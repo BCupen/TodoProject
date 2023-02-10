@@ -1,19 +1,33 @@
-import {format, parseISO, isBefore} from 'date-fns';
+import {format, parseISO, isBefore, isAfter} from 'date-fns';
 
 const tasks = (()=>{
     let taskList = [];
 
-    const task = (title, description, dueDate, priority, projectIndex)=>{
+    const task = (title, description, dueDate, priority, projectIndex, completed)=>{
         return {title, description, dueDate, priority, projectIndex};
     };
 
-    function addTask(title, dueDate, description, priority, projectIndex){
+    function sendToLocalStorage(){
+        const tasksObject = {taskList};
+        localStorage.setItem('tasks', JSON.stringify(tasksObject));
+    }
+
+
+    function initializeTaskList(){
+        const tasksObject =  JSON.parse(localStorage.getItem('tasks'));
+        if(tasksObject != null)
+            taskList = tasksObject.taskList;
+    }
+
+    function addTask(title, dueDate, description, priority, projectIndex, completed = false){
         if(description == ''){
             description = `(no description)`;
         }
             
-        const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, projectIndex);
+        const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, projectIndex, completed);
         taskList.unshift(newTask);
+
+        sendToLocalStorage();
     }
 
     function getTasks(filter, projectIndex=-1){
@@ -53,18 +67,34 @@ const tasks = (()=>{
                 taskList[i] = task;
             }
         }
+
+        sendToLocalStorage();
     }
 
-    function editTask(taskIndex, title, dueDate, description, priority, projectIndex){
-        const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, projectIndex);
+    function editTask(taskIndex, title, dueDate, description, priority, projectIndex, completed=false){
+        const newTask = task(title, description, format(parseISO(dueDate), 'yyyy-MM-dd'), priority, projectIndex, completed);
         taskList[taskIndex] = newTask;
+        sendToLocalStorage();
     }
 
     function deleteTaskByIndex(taskIndex){
         taskList.splice(taskIndex, 1);
+        sendToLocalStorage();
     }
 
-    return {addTask, getTasks, getTaskByIndex, editTasksProjects, editTask, deleteTaskByIndex}
+    function completeTask(taskIndex){
+        taskList[taskIndex].completed = true;
+        const completedTask = taskList.splice(taskIndex, 1);
+        taskList.push(completedTask[0]);
+        sendToLocalStorage()
+    }
+
+    function  incompleteTask(taskIndex){
+        taskList[taskIndex].completed =  false;
+        sendToLocalStorage();
+    }
+
+    return {initializeTaskList, addTask, getTasks, getTaskByIndex, editTasksProjects, editTask, deleteTaskByIndex, completeTask, incompleteTask}
 })();
 
 export default tasks;

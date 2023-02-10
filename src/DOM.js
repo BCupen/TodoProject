@@ -487,6 +487,10 @@ const DOM = (() =>{
         const checkbox = document.createElement('input');
         checkbox.type = `checkbox`;
         checkbox.id = `task-checkbox`;
+        if(task.completed){
+            checkbox.checked = true;
+            div.classList.add('completed');
+        }
         label.append(checkbox);
         const title = document.createElement('h3');
         title.classList.add('title');
@@ -497,13 +501,6 @@ const DOM = (() =>{
         priorityIcon.src = prioritySVG[task.priority];
         prioritySpan.append(priorityIcon);
 
-        checkbox.addEventListener('change', (e)=>{
-            if(checkbox.checked){
-                div.classList.add('completed');
-            }else{
-                div.classList.remove('completed');
-            }  
-        })
 
         const descriptionSpan = document.createElement('span');
         descriptionSpan.classList.add('task-descriptionSpan');
@@ -542,6 +539,9 @@ const DOM = (() =>{
             div.style.backgroundColor = taskBGColors['(none)'];
             projectSpan.textContent += `(none)`;
         }
+
+        if(task.completed)
+            div.style.backgroundColor = '#d1d5db';
 
         div.append(headingDiv, descriptionSpan, dueDateSpan, projectSpan, footerDiv);
         return div;
@@ -623,6 +623,18 @@ const DOM = (() =>{
             const allTasks = document.querySelectorAll('.task');
             const editTaskButtons = document.querySelectorAll('.task-edit');
             const deleteTaskButtons = document.querySelectorAll('.task-delete');
+            const taskCheckboxes = document.querySelectorAll('#task-checkbox');
+            taskCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', (e)=>{
+                const task = checkbox.parentElement.parentElement.parentElement;
+                if(checkbox.checked){
+                    task.classList.add('completed');
+                    tasks.completeTask(task.dataset.index);
+                }else{
+                    task.classList.remove('completed');
+                    tasks.incompleteTask(task.dataset.index);
+                }  
+                showTasks(currFilter, addTaskButton.dataset.pIndex);
+            }))
             editTaskButtons.forEach((button) => button.addEventListener('click', (e)=>{
                 const task = button.parentElement.parentElement.parentElement;
                 modal.style.display = 'block';
@@ -813,6 +825,7 @@ const DOM = (() =>{
 
         addTaskButton.addEventListener('click', (e)=>{
             modal.style.display = 'block';
+            _clearModalForm(form);
             _createNewTask(form, addTaskButton.dataset.pIndex);
         })
 
@@ -828,7 +841,15 @@ const DOM = (() =>{
         }))
     }
 
-    return {loadHandlers};
+    function initialize(){
+        tasks.initializeTaskList();
+        projects.initializeProjectList();
+        showProjects(projects.getProjects());
+        showTasks(currFilter, addTaskButton.dataset.pIndex);
+        _clearModalForm(form);
+    }
+
+    return {loadHandlers, initialize};
 })();
 
 export default DOM;

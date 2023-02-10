@@ -519,6 +519,10 @@ h3.title {
     fill: var(--grey-600);
 }
 
+.task.completed.expand .task-dueDateSpan{
+    color: var(--grey-600);
+}
+
 .task.expand{
     width: 25rem;
     height: 13rem;

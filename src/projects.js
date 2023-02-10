@@ -14,16 +14,29 @@ const projects = (()=>{
         return {name, color};
     };
 
+    function sendToLocalStorage(){
+        const projectsObect = {projectList};
+        localStorage.setItem('projects', JSON.stringify(projectsObect));
+    }
+
+    function initializeProjectList(){
+        const projectsObject = JSON.parse(localStorage.getItem('projects'));
+        if(projectsObject != null)
+            projectList = projectsObject.projectList;
+    }
+
     function addProject(name, color){
         const newProject = project(name, color);
 
         projectList.push(newProject);
+        sendToLocalStorage();
         return projectList;
     }
 
     function editProject(projectIndex, projectName, color){
         projectList[projectIndex].name = projectName;
         projectList[projectIndex].color = color; 
+        sendToLocalStorage();
         return projectList;
     }
 
@@ -48,10 +61,11 @@ const projects = (()=>{
 
     function deleteProjectByIndex(projectIndex){
         projectList.splice(projectIndex, 1);
+        sendToLocalStorage();
         return projectList;
     }
 
-    return {projectColors, addProject, editProject,getProjects, getProject, getProjectByIndex, deleteProjectByIndex};
+    return {projectColors, addProject, editProject,getProjects, getProject, getProjectByIndex, deleteProjectByIndex, initializeProjectList};
 
 
 })();
